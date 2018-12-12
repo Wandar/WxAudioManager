@@ -3,16 +3,12 @@ declare let wx: any;
  * 微信小游戏平台的音频管理类
  * 
  */
-class WxAudio {
+export class WxAudio {
   /** 单例 */
   private static _instance: WxAudio;
   constructor() {
     if (WxAudio._instance) throw `WxAudio cannot use new operator`;
     WxAudio._instance = this;
-    let platform = wx.getSystemInfoSync().platform || '';
-    // 安卓平台bug 实测微信6.6.7 版本库2.4.2，其他版本未测
-    // 文档上并发音频数为10 实测只有5
-    if (platform.toLowerCase() == 'android') WxAudio.WX_MAXAUDIO = 5;
     // 背景音乐
     this._bgm = wx.createInnerAudioContext();
     // 音效池数量 留一个给背景音乐
@@ -120,7 +116,7 @@ class WxAudio {
     ctx.onEnded(() => WxAudio.onEfcEnd(ctx));
     ctx.onStop(() => WxAudio.onEfcEnd(ctx));
     ctx.onPause(() => WxAudio.onEfcEnd(ctx));
-    ctx.onError(err =>  WxAudio.onEfcErr(ctx, err));
+    ctx.onError(err => WxAudio.onEfcErr(ctx, err));
 
     this._ctxPool.push(ctx);
   }
@@ -180,7 +176,7 @@ class WxAudio {
     let pool = this._ctxPool;
     for (let i = 0, len = pool.length; i < len; i++) {
       let ctx = pool[i];
-      if (!ctx.isplaying) {
+      if (!ctx.isplaying && ctx.paused) {
         return ctx
       }
     }
@@ -192,7 +188,27 @@ class WxAudio {
 
   stopAllEfc() {
     let pool = this._ctxPool;
-    pool.map(ctx=> ctx.stop());
+    pool.map(ctx => ctx.stop());
   }
-
+  /**
+   * 停止播放音效
+   */
+  stopLoopEfc(ctx) {
+    if (ctx) {
+      ctx.loop = false;
+      ctx.stop();
+    }
+  }
+  playLoopEfc(src: string) {
+    let ctx = this.getAudioCtx();
+    if (ctx) {
+      ctx.src = src;
+      !ctx.paused && ctx.seek(0);
+      ctx.isplaying = true;
+      ctx.loop = true;
+      ctx.play();
+      this._removeFromPlaying(ctx);
+      return ctx;
+    }
+  }
 }

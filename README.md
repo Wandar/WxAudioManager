@@ -5,7 +5,7 @@
 - 游戏逻辑不强依赖音频播放
 
 ## 复用策略
-- 音频池处理，初始化时默认创建10个[InnerAudioContext](https://developers.weixin.qq.com/minigame/dev/api/InnerAudioContext.html)实例,安卓5个（实测安卓微信6.6.7 版本库2.4.2，并发数为5，文档上为10）。
+- 音频池处理，初始化时默认创建10个[InnerAudioContext](https://developers.weixin.qq.com/minigame/dev/api/InnerAudioContext.html)实例,~~安卓5个（实测安卓微信6.6.7 版本库2.4.2，并发数为5，文档上为10~~ （锤子手机短音效播放完成偶发不会触发onEnd和onStop，paused转态也不会更新，有待解决）。
 - 当音频池中所有音频都处于播放状态，有新的音频需要播放，折中处理，停止播放队列中最先开始播放的音频，优先播放新的音频。
 
 ## 背景音乐和音效
