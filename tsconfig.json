@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "removeComments": true,
+    "experimentalDecorators": true,
+    "outDir": "./js/",
+    "sourceMap": false,
+    "lib": [
+      "es5",
+      "dom",
+      "es2015.promise",
+      "es6"
+    ]
+  },
+  "include": [
+      "./"
+  ],
+  "exclude": [
+      "node_modules"
+  ]
+}
